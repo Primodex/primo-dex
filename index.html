@@ -327,7 +327,7 @@ a{color:var(--blue)}
     <p><strong>No Recovery:</strong> Peak-month nighttime average (8 PM&ndash;5 AM hourly normals) exceeds 75&deg;F, preventing the body from cooling overnight.</p>
 
     <h4>Supplementary Metrics</h4>
-    <p><strong>WBGT (Wet Bulb Globe Temperature):</strong> Approximated using the Stull (2011) wet bulb formula combined with a simplified globe temperature model. WBGT = 0.7&times;T<sub>w</sub> + 0.2&times;T<sub>g</sub> + 0.1&times;T<sub>a</sub>. Flag categories per U.S. DoD TBMED 507: Green (&lt;25.6&deg;C), Yellow (25.6&ndash;27.8&deg;C), Red (27.8&ndash;30&deg;C), Black (&gt;30&deg;C).</p>
+    <p><strong>WBGT (Wet Bulb Globe Temperature):</strong> Approximated using the Stull (2011) wet bulb formula combined with a simplified globe temperature model. WBGT = 0.7&times;T<sub>w</sub> + 0.2&times;T<sub>g</sub> + 0.1&times;T<sub>a</sub>. Flag categories per U.S. DoD TBMED 507: Green (&lt;78&deg;F), Yellow (78&ndash;82&deg;F), Red (82&ndash;86&deg;F), Black (&gt;86&deg;F).</p>
     <p><strong>Estimated Fluid Loss:</strong> Simplified thermoregulatory model from Gonzalez, Cheuvront &amp; Sawka (2009). Estimates sweat rate from skin temperature, convective heat transfer, and metabolic rate at five activity levels (80&ndash;600 W/m&sup2;). Output in oz/hr.</p>
     <p><strong>UV Index:</strong> Estimated from solar zenith angle (latitude + seasonal declination), altitude correction (+6% per km), and cloud cover attenuation. Categories per EPA UV Index Scale: Low (&lt;3), Moderate (3&ndash;5), High (6&ndash;7), Very High (8&ndash;10), Extreme (11+).</p>
     <p><strong>Nighttime Temperature:</strong> Average of hours 20:00&ndash;05:00 from NOAA hourly normals. &ldquo;No Recovery&rdquo; flag when peak-month nighttime average exceeds 75&deg;F, indicating the body cannot cool down overnight.</p>
@@ -775,7 +775,7 @@ function updateMarkers(){
       <div class="popup-detail"><strong>${seasonLabel} HDS</strong></div>
       <div class="popup-detail">Peak: ${c.peakMonth} &bull; ${c.highDemandDays} high-demand days/yr</div>
       <div class="popup-detail">Risk Hours: ${c.annualHighHIHours.toLocaleString()}/yr (${c.pctYear}% of year)</div>
-      <div class="popup-detail">WBGT: <span class="wbgt-badge ${wf.cls}">${c.peakWBGT.toFixed(1)}&deg;C ${wf.label}</span></div>
+      <div class="popup-detail">WBGT: <span class="wbgt-badge ${wf.cls}">${(c.peakWBGT*9/5+32).toFixed(1)}&deg;F ${wf.label}</span></div>
       <div class="popup-detail">UV Index: <span class="uvi-badge ${uc.cls}">${c.peakUVI} ${uc.label}</span></div>
       <div class="popup-detail">Night Temp: ${c.peakNightTemp.toFixed(1)}&deg;F${c.noRecovery?' <span class="no-recovery">No Recovery</span>':''}</div>
       <div class="popup-detail">Fluid Loss: ${c.peakSweatAdj} oz/hr (moderate)${c.highAlt?' <span class="altitude-flag">High Altitude</span>':''}</div>
@@ -814,7 +814,7 @@ function updateRankings(ranked){
       <td>${c.peakMonth}</td>
       <td>${c.highDemandDays}</td>
       <td>${c.annualHighHIHours.toLocaleString()} <span style="font-size:0.75rem;color:var(--text-light)">(${c.pctYear}%)</span></td>
-      <td><span class="wbgt-badge ${wf.cls}">${c.peakWBGT.toFixed(1)}&deg;C</span></td>
+      <td><span class="wbgt-badge ${wf.cls}">${(c.peakWBGT*9/5+32).toFixed(1)}&deg;F</span></td>
       <td><span class="uvi-badge ${uc.cls}">${c.peakUVI}</span></td>
       <td>${c.peakNightTemp.toFixed(1)}&deg;F${c.noRecovery?' <span class="no-recovery">No Recovery</span>':''}</td>
       <td>${c.peakSweatAdj} oz/hr${c.highAlt?' <span class="altitude-flag">Alt +'+Math.round((c.altMult-1)*100)+'%</span>':''}</td>
@@ -928,7 +928,7 @@ function renderCalcCards(c1,c2,mult){
       <div class="metrics-grid">
         <div class="metric-box">
           <div class="metric-label">Peak WBGT</div>
-          <div class="metric-value"><span class="wbgt-badge ${wf.cls}">${c.peakWBGT.toFixed(1)}&deg;C</span></div>
+          <div class="metric-value"><span class="wbgt-badge ${wf.cls}">${(c.peakWBGT*9/5+32).toFixed(1)}&deg;F</span></div>
           <div class="metric-sub">${wf.label} Flag</div>
         </div>
         <div class="metric-box">
