@@ -229,7 +229,7 @@ a{color:var(--blue)}
             <tr>
               <th data-sort="rank">Rank</th>
               <th data-sort="city">City</th>
-              <th data-sort="hds">HDS Score</th>
+              <th data-sort="hds">Hydration Demand Score</th>
               <th data-sort="peak">Peak Month</th>
               <th data-sort="days">High-Demand Days</th>
               <th data-sort="riskhours">Risk Hours/yr</th>
@@ -237,7 +237,6 @@ a{color:var(--blue)}
               <th data-sort="uvi">Peak UV</th>
               <th data-sort="night">Night Temp</th>
               <th data-sort="fluid">Fluid Loss</th>
-              <th data-sort="streak">Streak</th>
               <th data-sort="archetype">Archetype</th>
               <th>Notes</th>
             </tr>
@@ -285,7 +284,7 @@ a{color:var(--blue)}
     </div>
     <div class="multiplier-info">
       <h4>Why Your Workout Turns Up the Dial</h4>
-      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:12px">Physical exertion multiplies sweat rate. At vigorous exercise, your body produces 6-8x more sweat than at rest. The adjusted HDS shows how conditions that are merely warm for a sedentary person become dangerous for athletes.</p>
+      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:12px">Physical exertion multiplies sweat rate. At vigorous exercise, your body produces 6-8x more sweat than at rest. The adjusted Hydration Demand Score shows how conditions that are merely warm for a sedentary person become dangerous for athletes.</p>
       <div class="multiplier-bars" id="mult-bars"></div>
     </div>
   </div>
@@ -767,12 +766,12 @@ function updateMarkers(){
       weight:2, opacity:1, fillOpacity:0.85
     }).addTo(map);
     const seasonLabel=currentSeason==='annual'?'Annual':'Seasonal';
-    m.bindTooltip(`<strong>#${c.seasonRank} ${c.city}</strong><br>HDS: ${hds}`,{direction:'top',offset:[0,-8]});
+    m.bindTooltip(`<strong>#${c.seasonRank} ${c.city}</strong><br>Hydration Demand Score: ${hds}`,{direction:'top',offset:[0,-8]});
     const wf=c.peakWBGTFlag,uc=c.peakUVICat;
     m.bindPopup(`<div class="city-popup">
       <h4>#${c.seasonRank} ${c.city}, ${c.state}</h4>
       <div class="popup-hds" style="color:${hdsColor(hds)}">${hds}</div>
-      <div class="popup-detail"><strong>${seasonLabel} HDS</strong></div>
+      <div class="popup-detail"><strong>${seasonLabel} Hydration Demand Score</strong></div>
       <div class="popup-detail">Peak: ${c.peakMonth} &bull; ${c.highDemandDays} high-demand days/yr</div>
       <div class="popup-detail">Risk Hours: ${c.annualHighHIHours.toLocaleString()}/yr (${c.pctYear}% of year)</div>
       <div class="popup-detail">WBGT: <span class="wbgt-badge ${wf.cls}">${(c.peakWBGT*9/5+32).toFixed(1)}&deg;F ${wf.label}</span></div>
@@ -818,7 +817,6 @@ function updateRankings(ranked){
       <td><span class="uvi-badge ${uc.cls}">${c.peakUVI}</span></td>
       <td>${c.peakNightTemp.toFixed(1)}&deg;F${c.noRecovery?' <span class="no-recovery">No Recovery</span>':''}</td>
       <td>${c.peakSweatAdj} oz/hr${c.highAlt?' <span class="altitude-flag">Alt +'+Math.round((c.altMult-1)*100)+'%</span>':''}</td>
-      <td>${c.streak.months} mo / ${c.streak.days} days</td>
       <td><span class="archetype-tag ${arcClass}">${c.archetype}</span></td>
       <td>${c.isHumidityTrap?'<span class="trap-badge">Humidity Trap</span>':''}</td>
     </tr>`;
@@ -843,7 +841,6 @@ document.getElementById('rankings-table').querySelector('thead').addEventListene
       case'uvi':va=a.peakUVI;vb=b.peakUVI;break;
       case'night':va=a.peakNightTemp;vb=b.peakNightTemp;break;
       case'fluid':va=a.peakSweatAdj;vb=b.peakSweatAdj;break;
-      case'streak':va=a.streak.months;vb=b.streak.months;break;
       case'archetype':va=a.highMonths;vb=b.highMonths;break;
       default:va=0;vb=0;
     }
@@ -874,7 +871,7 @@ function updateRegionSidebar(){
 function initCalculator(){
   const s1=document.getElementById('calc-city1'), s2=document.getElementById('calc-city2');
   cities.forEach(c=>{
-    const opt=`<option value="${c.city}">#${c.rank} ${c.city}, ${c.state} (HDS: ${c.annualHDS})</option>`;
+    const opt=`<option value="${c.city}">#${c.rank} ${c.city}, ${c.state} (Score: ${c.annualHDS})</option>`;
     s1.insertAdjacentHTML('beforeend',opt);
     s2.insertAdjacentHTML('beforeend',opt);
   });
@@ -919,9 +916,9 @@ function renderCalcCards(c1,c2,mult){
       <h3>#${c.rank} ${c.city}, ${c.state}</h3>
       <div class="city-hds" style="color:${hdsColor(adj)}">${adj}</div>
       <div class="city-details">
-        <span><strong>Base HDS:</strong> ${c.annualHDS} &rarr; <strong>Adjusted:</strong> ${adj} (${mult}x activity)</span>
-        <span><strong>Peak Month:</strong> ${c.peakMonth} (HDS: ${peakAdj})</span>
-        <span><strong>High-Demand Days:</strong> ${c.highDemandDays}/year &bull; <strong>Streak:</strong> ${c.streak.months} mo / ${c.streak.days} days</span>
+        <span><strong>Base Hydration Demand Score:</strong> ${c.annualHDS} &rarr; <strong>Adjusted:</strong> ${adj} (${mult}x activity)</span>
+        <span><strong>Peak Month:</strong> ${c.peakMonth} (Score: ${peakAdj})</span>
+        <span><strong>High-Demand Days:</strong> ${c.highDemandDays}/year</span>
         <span><strong>Archetype:</strong> <span class="archetype-tag ${c.archetype.includes('Year')?'year-round':c.archetype.includes('Seasonal')?'seasonal':c.archetype.includes('Brief')?'brief':'low'}">${c.archetype}</span></span>
         ${c.isHumidityTrap?'<span><span class="trap-badge">Humidity Trap</span> Humidity amplifies heat beyond temperature alone</span>':''}
       </div>
@@ -987,7 +984,7 @@ function renderChart(c1,c2,mult){
   const ctx=document.getElementById('comparison-chart');
   if(compChart)compChart.destroy();
   const datasets=[{
-    label:`${c1.city} HDS`,
+    label:`${c1.city} Hydration Demand Score`,
     data:c1.monthlyHDS.map(v=>adjustHDS(v,mult)),
     borderColor:'#0077b6',backgroundColor:'rgba(0,119,182,0.08)',
     fill:true,tension:0.4,pointRadius:4,pointHoverRadius:6,borderWidth:2.5
@@ -1002,7 +999,7 @@ function renderChart(c1,c2,mult){
   });
   if(c2){
     datasets.push({
-      label:`${c2.city} HDS`,
+      label:`${c2.city} Hydration Demand Score`,
       data:c2.monthlyHDS.map(v=>adjustHDS(v,mult)),
       borderColor:'#d62828',backgroundColor:'rgba(214,40,40,0.08)',
       fill:true,tension:0.4,pointRadius:4,pointHoverRadius:6,borderWidth:2.5
