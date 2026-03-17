@@ -1057,12 +1057,20 @@ function renderChart(c1,c2,mult){
 
 function renderMultBars(activeMult){
   const m=activeMult||4.5;
-  const levels=[{l:'Sedentary',v:1},{l:'Light',v:2},{l:'Moderate',v:4.5},{l:'Vigorous',v:7},{l:'Intense',v:10}];
-  document.getElementById('mult-bars').innerHTML=levels.map(lv=>`
-    <div class="mult-bar ${lv.v===m?'active':''}">
+  const levels=[{l:'Sedentary',v:1.0},{l:'Light',v:2.0},{l:'Moderate',v:4.5},{l:'Vigorous',v:7.0},{l:'Intense',v:10.0}];
+  const container=document.getElementById('mult-bars');
+  container.innerHTML=levels.map(lv=>`
+    <div class="mult-bar ${lv.v===m?'active':''}" data-mult="${lv.v.toFixed(1)}" style="cursor:pointer">
       <span class="mult-value">${lv.v}x</span>
       <span class="mult-label">${lv.l}</span>
     </div>`).join('');
+  container.querySelectorAll('.mult-bar').forEach(bar=>{
+    bar.addEventListener('click',()=>{
+      const sel=document.getElementById('calc-activity');
+      sel.value=bar.dataset.mult;
+      sel.dispatchEvent(new Event('change'));
+    });
+  });
 }
 
 // ===== KEY FINDINGS =====
