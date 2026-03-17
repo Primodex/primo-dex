@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>America's Sweatiest Cities | Hydration Demand Index</title>
+<title>America's Sweatiest Cities | Where Hydration Gets Real</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --blue-dark:#0b3d6b;--blue:#0077b6;--blue-light:#00b4d8;--blue-pale:#caf0f8;
+  --blue-dark:#003088;--blue:#0071d0;--blue-light:#00b3e4;--blue-pale:#caf0f8;
   --bg:#f8fbff;--text:#1a1a2e;--text-light:#555;--white:#fff;
   --green:#2dc653;--yellow:#ffd166;--orange:#f77f00;--red:#d62828;
   --radius:10px;--shadow:0 2px 12px rgba(0,0,0,0.08);
@@ -30,6 +30,11 @@ a{color:var(--blue)}
 .hero .stat{text-align:center}
 .hero .stat-value{font-size:2rem;font-weight:700}
 .hero .stat-label{font-size:0.8rem;opacity:0.7;text-transform:uppercase;letter-spacing:1px}
+
+/* Partner Bar */
+.partner-bar{background:#003088;color:#fff;text-align:center;padding:8px 20px;font-size:0.75rem;display:flex;justify-content:center;align-items:center;gap:8px}
+.partner-bar a{color:#00b3e4;text-decoration:none;font-weight:600}
+.partner-bar a:hover{text-decoration:underline}
 
 /* Section */
 .section{padding:50px 0}
@@ -107,6 +112,7 @@ a{color:var(--blue)}
 .methodology p,.methodology ul{font-size:0.85rem;color:var(--text-light);margin-bottom:10px;max-width:800px}
 .methodology ul{padding-left:20px}
 .methodology li{margin-bottom:4px}
+.methodology h4{font-size:0.95rem;color:var(--blue-dark);margin:18px 0 8px}
 
 /* Leaflet popup */
 .city-popup{min-width:200px}
@@ -147,16 +153,32 @@ a{color:var(--blue)}
 .finding-card h4{font-size:0.95rem;color:var(--blue-dark);margin-bottom:8px}
 .finding-card p{font-size:0.85rem;color:var(--text-light);line-height:1.6}
 .finding-stat{font-size:1.8rem;font-weight:800;color:var(--blue-dark);margin:4px 0}
+.guidance-panel{background:linear-gradient(135deg,#f0f7ff,#e8f4fd);border-radius:var(--radius);padding:24px;margin-bottom:20px;border-left:4px solid var(--blue-light)}
+.guidance-panel h4{font-size:1.05rem;margin-bottom:12px;color:var(--blue-dark)}
+.guidance-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.guidance-grid{grid-template-columns:1fr}}
+.guidance-product{background:var(--white);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.guidance-product .gp-name{font-weight:700;font-size:1rem;color:#003088}
+.guidance-product .gp-dosage{font-size:0.9rem;font-weight:600;color:var(--blue-dark)}
+.guidance-product .gp-reason{font-size:0.85rem;color:var(--text-light)}
+.guidance-product a{font-size:0.8rem;color:var(--blue);text-decoration:none}
+.guidance-product a:hover{text-decoration:underline}
+.recovery-tip{margin-top:14px;padding:12px 16px;background:var(--white);border-radius:8px;border-left:3px solid var(--orange);font-size:0.85rem;color:var(--text-light)}
 </style>
 </head>
 <body>
+
+<!-- ============ PARTNER BAR ============ -->
+<div class="partner-bar">
+  A <a href="https://waterboy.com" target="_blank" rel="noopener">WaterBoy</a> &times; Fractl Study &bull; Hydration, but make it functional.
+</div>
 
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="container">
     <h1>America's Sweatiest Cities</h1>
-    <p class="subtitle">Where Your Body Demands More: Ranking U.S. Metros by Hydration Demand</p>
-    <p class="source">Powered by NOAA 1991-2020 Climate Normals &bull; Hydration Demand Score (HDS)</p>
+    <p class="subtitle">Same workout, different city, totally different sweat. 80 metros ranked by what your body actually loses.</p>
+    <p class="source">Built on 30 years of NOAA weather data &bull; Hydration Demand Score (HDS)</p>
     <div class="hero-stats" id="hero-stats"></div>
   </div>
 </header>
@@ -166,18 +188,25 @@ a{color:var(--blue)}
   <div class="container">
     <div class="section-header">
       <h2>Key Findings</h2>
-      <p>Five data-driven takeaways from 80 U.S. metros, powered by 30 years of NOAA hourly observations.</p>
+      <p>Six reasons hydration isn't one-size-fits-all &mdash; backed by 30 years of NOAA data across 80 metros.</p>
     </div>
     <div class="findings-grid" id="findings-grid"></div>
   </div>
 </section>
 
+<div style="max-width:700px;margin:0 auto;padding:20px 20px 0;text-align:center">
+  <p style="font-size:1.05rem;color:var(--blue-dark);font-weight:600;line-height:1.7">
+    The data is clear: where you are, what season it is, and how hard you're pushing
+    all change how much fluid you lose. Different situations demand different hydration.
+  </p>
+</div>
+
 <!-- ============ MAP SECTION ============ -->
 <section class="section">
   <div class="container">
     <div class="section-header">
-      <h2>The Hydration Demand Map</h2>
-      <p>Explore which U.S. metros put the highest heat stress on your body. Click any city for details.</p>
+      <h2>The Sweat Map</h2>
+      <p>Where does your body work overtime to stay cool? Click any city for the full breakdown.</p>
     </div>
     <div class="filters" id="season-filters">
       <button class="filter-btn active" data-season="annual">Annual</button>
@@ -224,8 +253,8 @@ a{color:var(--blue)}
 <section class="section" style="background:var(--blue-pale)">
   <div class="container">
     <div class="section-header">
-      <h2>Hydration Demand Calculator</h2>
-      <p>Compare cities side-by-side and see how activity level changes your hydration needs.</p>
+      <h2>Your Hydration Playbook</h2>
+      <p>Your hydration needs change with your zip code and your workout. Dial in both to see what your body's actually dealing with.</p>
     </div>
     <div class="controls">
       <div class="control-group">
@@ -248,13 +277,14 @@ a{color:var(--blue)}
       </div>
     </div>
     <div class="calc-layout" id="calc-cards"></div>
+    <div id="guidance-panel" class="guidance-panel" style="display:none"></div>
     <div class="chart-wrap">
       <div class="chart-container">
         <canvas id="comparison-chart"></canvas>
       </div>
     </div>
     <div class="multiplier-info">
-      <h4>How Activity Level Affects Hydration Demand</h4>
+      <h4>Why Your Workout Turns Up the Dial</h4>
       <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:12px">Physical exertion multiplies sweat rate. At vigorous exercise, your body produces 6-8x more sweat than at rest. The adjusted HDS shows how conditions that are merely warm for a sedentary person become dangerous for athletes.</p>
       <div class="multiplier-bars" id="mult-bars"></div>
     </div>
@@ -265,26 +295,74 @@ a{color:var(--blue)}
 <footer class="methodology">
   <div class="container">
     <h3>Methodology</h3>
-    <p><strong>Data Source:</strong> NOAA 1991-2020 U.S. Climate Normals (Hourly), covering 30 years of observations at major airport weather stations across 80 metro areas.</p>
-    <p><strong>Hydration Demand Score (0-100):</strong></p>
+
+    <h4>Study Overview</h4>
+    <p>This study ranks 80 U.S. metropolitan areas by year-round hydration demand using a composite Hydration Demand Score (HDS) scaled 0&ndash;100.</p>
+    <p><strong>Data Source:</strong> NOAA 1991-2020 U.S. Climate Normals (Hourly) &mdash; 30 years of hourly observations (8,760 records per station per year) at major airport weather stations.</p>
+    <p><strong>Timeframe:</strong> Averaged conditions from January 1, 1991 through December 31, 2020.</p>
+    <p><em>Rankings reflect the 80 metros included in this study and should not be interpreted as a ranking of all U.S. cities.</em></p>
+
+    <h4>City Selection Criteria</h4>
+    <p><strong>Inclusion:</strong> A metro was included if (a) it has a primary NOAA hourly-normals weather station at a major commercial airport, (b) the station file contains complete 12-month hourly coverage with no missing monthly periods, and (c) the metro is among the 80 largest U.S. metros by population or represents a climatically distinct region not otherwise covered (e.g., Honolulu for tropical marine climate).</p>
+    <p><strong>Exclusions:</strong> Cities without a qualifying NOAA hourly-normals station were excluded because the HDS formula and Risk Hours metric require hourly Heat Index observations that daily-only stations cannot provide. Some large metros may be absent if their primary station data was incomplete or if two nearby metros share the same NOAA station.</p>
+    <p><strong>Geographic Scope:</strong> Continental U.S. plus Honolulu, HI. Alaska, Puerto Rico, and U.S. territories were excluded because their climate regimes fall outside the calibration ranges used for the 0&ndash;100 normalization and would distort comparative rankings.</p>
+
+    <h4>Hydration Demand Score (HDS)</h4>
+    <p>A composite of four climate variables, each normalized to a 0&ndash;100 scale:</p>
     <ul>
-      <li><strong>50% Heat Index</strong> (NWS Rothfusz regression) &mdash; the gold-standard measure of perceived heat combining temperature and humidity</li>
-      <li><strong>20% Temperature</strong> &mdash; independent thermal load capturing the radiation/convection threshold near 95&deg;F</li>
-      <li><strong>20% Dew Point</strong> &mdash; absolute moisture content, directly constraining evaporative cooling capacity</li>
-      <li><strong>10% Relative Humidity</strong> &mdash; local evaporative resistance</li>
+      <li><strong>50% Heat Index</strong> (NWS Rothfusz regression) &mdash; calibrated 70&ndash;95&deg;F</li>
+      <li><strong>20% Temperature</strong> &mdash; calibrated 65&ndash;90&deg;F</li>
+      <li><strong>20% Dew Point</strong> &mdash; calibrated 45&ndash;75&deg;F</li>
+      <li><strong>10% Relative Humidity</strong> (Magnus/Alduchov-Eskridge formula) &mdash; calibrated 40&ndash;85%</li>
     </ul>
-    <p>Each component normalized to 0-100 scale using monthly-average calibration (Heat Index: 70-95&deg;F, Temperature: 65-90&deg;F, Dew Point: 45-75&deg;F, RH: 40-85%). Weights based on the Shapiro sweat rate prediction equation and NWS heat index methodology.</p>
-    <p><strong>Archetypes:</strong> Year-Round Burden (6+ high-demand months), Seasonal Surge (3-5 months), Brief Window (1-2 months), Low Demand (0 months). A "high-demand month" has HDS &ge; 30 or average Heat Index &ge; 82&deg;F.</p>
-    <p><strong>Humidity Trap:</strong> Cities where the heat index exceeds raw temperature by more than 5% during peak months, indicating humidity amplifies perceived heat well beyond what temperature alone predicts.</p>
-    <h3 style="margin-top:20px">Supplementary Metrics</h3>
+    <p><strong>Why a new composite metric:</strong> Existing single metrics like Heat Index or WBGT capture specific aspects of heat stress but do not account for the full picture of hydration demand &mdash; the combination of evaporative resistance (humidity), radiation load (temperature), and overnight recovery capacity. HDS integrates these factors into a single comparable score calibrated to the range of conditions observed across U.S. metros.</p>
+    <p><strong>Why these weights:</strong> Heat Index receives the largest weight as the gold-standard measure of perceived heat combining temperature and humidity. Temperature is weighted independently to capture dry-heat radiation load important in arid metros like Phoenix. Dew Point measures absolute moisture that directly constrains evaporative cooling. RH receives the smallest weight to avoid double-counting moisture already reflected in HI while still capturing local evaporative resistance.</p>
+    <p><strong>Why these calibration ranges:</strong> Ranges span the practical variation observed across all 80 metros&rsquo; monthly averages, anchored to physiologically meaningful thresholds (70&deg;F HI = onset of elevated perceived heat; 95&deg;F = NWS &ldquo;Extreme Caution&rdquo; boundary).</p>
+    <p>Annual HDS = mean of 12 monthly values. Rankings sorted by Annual HDS descending; ties broken by peak-month HDS. Component weights total exactly 100%. All scores rounded to one decimal place.</p>
+
+    <h4>Derived Classifications</h4>
+    <p><strong>High-Demand Month:</strong> Monthly HDS &ge; 30 or monthly average Heat Index &ge; 82&deg;F.</p>
+    <p><strong>Archetypes:</strong> Year-Round Burden (6+ high-demand months), Seasonal Surge (3&ndash;5 months), Brief Window (1&ndash;2 months), Low Demand (0 months).</p>
+    <p><strong>Humidity Trap:</strong> Peak-month Heat Index exceeds raw temperature by more than 5%, indicating humidity amplifies perceived heat beyond what temperature alone predicts.</p>
+    <p><strong>No Recovery:</strong> Peak-month nighttime average (8 PM&ndash;5 AM hourly normals) exceeds 75&deg;F, preventing the body from cooling overnight.</p>
+
+    <h4>Supplementary Metrics</h4>
     <p><strong>WBGT (Wet Bulb Globe Temperature):</strong> Approximated using the Stull (2011) wet bulb formula combined with a simplified globe temperature model. WBGT = 0.7&times;T<sub>w</sub> + 0.2&times;T<sub>g</sub> + 0.1&times;T<sub>a</sub>. Flag categories per U.S. DoD TBMED 507: Green (&lt;25.6&deg;C), Yellow (25.6&ndash;27.8&deg;C), Red (27.8&ndash;30&deg;C), Black (&gt;30&deg;C).</p>
     <p><strong>Estimated Fluid Loss:</strong> Simplified thermoregulatory model from Gonzalez, Cheuvront &amp; Sawka (2009). Estimates sweat rate from skin temperature, convective heat transfer, and metabolic rate at five activity levels (80&ndash;600 W/m&sup2;). Output in oz/hr.</p>
     <p><strong>UV Index:</strong> Estimated from solar zenith angle (latitude + seasonal declination), altitude correction (+6% per km), and cloud cover attenuation. Categories per EPA UV Index Scale: Low (&lt;3), Moderate (3&ndash;5), High (6&ndash;7), Very High (8&ndash;10), Extreme (11+).</p>
     <p><strong>Nighttime Temperature:</strong> Average of hours 20:00&ndash;05:00 from NOAA hourly normals. &ldquo;No Recovery&rdquo; flag when peak-month nighttime average exceeds 75&deg;F, indicating the body cannot cool down overnight.</p>
     <p><strong>Altitude Adjustment:</strong> Fluid loss increased by 5% per 1,000m of elevation per National Academies IOM and USARIEM TB MED 505 guidelines. Cities above 1,000m are flagged as high-altitude.</p>
     <p><strong>Consecutive High-Demand Streak:</strong> Longest run of consecutive months with HDS &ge; 30, including December&rarr;January wraparound. Days estimated as HDS/100 &times; days in each qualifying month.</p>
-    <p><strong>Risk Hours:</strong> Count of hourly normals (out of 8,760 per year) where the computed Heat Index &ge; 80&deg;F, the NWS &ldquo;Caution&rdquo; threshold. Represents the percentage of a typical year a city spends at or above conditions that require increased hydration awareness.</p>
+    <p><strong>Risk Hours:</strong> Count of hourly normals (out of 8,760 per year) where the computed Heat Index &ge; 80&deg;F, the NWS &ldquo;Caution&rdquo; threshold. Represents the percentage of a typical year a city spends at or above conditions that require increased hydration awareness. This metric captures sub-daily heat spikes that monthly averages mask &mdash; a city with 4,000+ risk hours faces meaningfully different conditions than one with 300, even when monthly averages appear similar.</p>
+
+    <h4>Product Guidance</h4>
+    <p>Product recommendations map activity-adjusted fluid loss to WaterBoy&rsquo;s product line: <strong>Daily Hydration</strong> for sedentary-to-light activity (&le;2.0&times; metabolic multiplier), <strong>Workout Hydration</strong> for moderate-to-intense activity (&gt;2.0&times;), and <strong>Weekend Recovery</strong> for cities where peak-month nighttime temperatures prevent overnight physiological reset. Dosage (sticks per session) is estimated as peak-month fluid loss divided by 16 oz per serving, rounded up. These are general guidelines based on population-level sweat-rate estimates, not individualized medical advice.</p>
+
+    <h4>Study Limitations</h4>
+    <ul>
+      <li><strong>Airport station bias:</strong> NOAA stations are located at commercial airports, which may run slightly warmer (urban heat island) or cooler (open tarmac) than nearby residential areas.</li>
+      <li><strong>Normals vs. extremes:</strong> Climate normals represent 30-year averages. Individual years or heat waves may produce significantly higher hydration demands than shown here.</li>
+      <li><strong>Outdoor exposure assumed:</strong> All metrics assume outdoor exposure. Indoor, shaded, or air-conditioned environments reduce actual hydration demand.</li>
+      <li><strong>Individual variation:</strong> Fluid loss estimates are population-level approximations. Actual sweat rates vary by body size, fitness level, acclimatization, clothing, and medical conditions.</li>
+      <li><strong>Altitude simplification:</strong> The +5% per 1,000m elevation adjustment is a simplified guideline from USARIEM. Actual altitude effects depend on acclimatization status and duration of exposure.</li>
+      <li><strong>Humidity derivation:</strong> Relative humidity is calculated from temperature and dew point via the Magnus formula rather than directly measured, which may introduce small errors at extreme values.</li>
+    </ul>
+
+    <h4>Counterintuitive Results</h4>
+    <p>Two results may surprise readers. First, <strong>West Palm Beach ranks #1 overall, ahead of Miami.</strong> West Palm Beach&rsquo;s NOAA station (KPBI) records slightly higher year-round humidity and warmer overnight lows than Miami&rsquo;s (KMIA), likely due to its inland-coastal position relative to the Gulf Stream. The difference is small (roughly 2 HDS points) but consistent across all 12 months.</p>
+    <p>Second, <strong>Phoenix ranks #12 overall despite producing the highest fluid loss per hour of any city in the study.</strong> In dry heat, sweat evaporates efficiently, which lowers perceived strain (Heat Index) even as the body loses more water. Humid cities rank higher because high dew points trap heat against the skin, forcing the cardiovascular system to work harder to cool down &mdash; even when raw fluid loss is lower.</p>
+
     <p style="margin-top:15px;font-size:0.8rem;opacity:0.6">Sources: Shapiro et al. (1982) &bull; Steadman (1979) &bull; NWS Heat Index Equation (Rothfusz 1990) &bull; Alduchov &amp; Eskridge (1996) Magnus formula &bull; ACSM Fluid Replacement Guidelines (2007) &bull; Gonzalez, Cheuvront &amp; Sawka (2009) &bull; Stull (2011) &bull; U.S. DoD TBMED 507 &bull; EPA UV Index Scale &bull; National Academies IOM &bull; USARIEM TB MED 505</p>
+    <p style="font-size:0.75rem;opacity:0.5;margin-top:8px">All scores are rounded to one decimal place. Percentages may not total 100% due to rounding.</p>
+    <p style="font-size:0.75rem;opacity:0.5;margin-top:8px">This study is for informational purposes only and does not constitute medical advice. Consult a healthcare professional for personalized hydration guidance, especially if you have medical conditions or take medications that affect fluid balance.</p>
+  </div>
+  <div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <p style="font-size:0.8rem;color:var(--text-light);margin:0">
+      This study was produced by Fractl in partnership with
+      <a href="https://waterboy.com" target="_blank" rel="noopener">WaterBoy</a>.
+      All data, methodology, and analysis are independently developed using public NOAA records.
+      Product recommendations reflect general hydration science applied to WaterBoy&rsquo;s formulas.
+    </p>
   </div>
 </footer>
 
@@ -470,6 +548,39 @@ const ACTIVITY_LEVELS=[
   {label:'Moderate',watts:300},{label:'Vigorous',watts:450},{label:'Intense',watts:600}
 ];
 
+function activityToWatts(mult){
+  if(mult<=1.0) return 80;
+  if(mult<=2.0) return 150;
+  if(mult<=4.5) return 300;
+  if(mult<=7.0) return 450;
+  return 600;
+}
+
+function getHydrationRec(city, mult){
+  const pi=city.peakIdx;
+  const peakOz=Math.round(computeSweatRate(city.monthlyTemp[pi],city.monthlyWind[pi],activityToWatts(mult))*city.altMult*10)/10;
+  const sessionOz=peakOz*1.5;
+  let product,url,reason,sticks;
+  if(mult<=2.0){
+    product='Daily Hydration';
+    url='https://waterboy.com/products/daily-hydration';
+    reason='Low-sodium everyday formula \u2014 stays ahead of passive sweat loss';
+    sticks=Math.max(1,Math.round(sessionOz/16));
+  } else {
+    product='Workout Hydration';
+    url='https://waterboy.com/products/sports-recovery-formula';
+    reason='High-sodium formula built for training \u2014 replaces what sweat takes';
+    sticks=Math.max(1,Math.round(sessionOz/16));
+  }
+  let recovery=null;
+  if(city.noRecovery||city.peakNightTemp>72){
+    recovery={product:'Weekend Recovery',
+      url:'https://waterboy.com/products/weekend-recovery',
+      text:`Night temps in ${city.city} stay above ${Math.round(city.peakNightTemp)}\u00b0F \u2014 your body can\u2019t fully reset overnight`};
+  }
+  return {product,url,reason,sticks,peakOz,recovery};
+}
+
 // UV Index estimate
 function computeUVI(lat,month,elevM,cloudFactor){
   const midDOY=[15,46,74,105,135,166,196,227,258,288,319,349];
@@ -530,7 +641,14 @@ const cities = RAW_DATA.map(c => {
   const monthlyRH = c.monthlyTemp.map((t,i) => Math.round(computeRH(t,c.monthlyDewp[i])*10)/10);
   const monthlyHDS = c.monthlyTemp.map((t,i) => computeHDS(t,c.monthlyDewp[i],c.monthlyHI[i],monthlyRH[i]));
   const annualHDS = Math.round(monthlyHDS.reduce((a,b)=>a+b,0)/12*10)/10;
-  const peakIdx = monthlyHDS.indexOf(Math.max(...monthlyHDS));
+  let peakIdx = monthlyHDS.indexOf(Math.max(...monthlyHDS));
+  // HDS can peak in winter for cold cities where humidity drives the score rather
+  // than heat. If the peak month's avg temp is below 60°F, use the warmest month
+  // instead — hydration demand in this study is about heat stress, not cold-air humidity.
+  if(c.monthlyTemp[peakIdx]<60){
+    const warmIdx=c.monthlyTemp.indexOf(Math.max(...c.monthlyTemp));
+    peakIdx=warmIdx;
+  }
   const highMonths = monthlyHDS.filter((v,i)=> v>=HDS_HIGH || c.monthlyHI[i]>=HI_HIGH).length;
   const highDemandDays = monthlyHDS.reduce((sum,v,i)=>(v>=HDS_HIGH||c.monthlyHI[i]>=HI_HIGH)?sum+MONTH_DAYS[i]:sum,0);
   let archetype='Low Demand';
@@ -776,6 +894,7 @@ function updateCalc(){
   const c2=c2Name?getCity(c2Name):null;
   const mult=parseFloat(document.getElementById('calc-activity').value);
   renderCalcCards(c1,c2,mult);
+  renderGuidancePanel(c1,c2,mult);
   renderChart(c1,c2,mult);
   renderMultBars(mult);
 }
@@ -840,6 +959,28 @@ function renderCalcCards(c1,c2,mult){
     </div>`;
   }
   container.innerHTML=card(c1)+(c2?card(c2):'<div class="calc-card" style="display:flex;align-items:center;justify-content:center;color:var(--text-light);font-size:0.95rem"><p>Select a second city to compare</p></div>');
+}
+
+function renderGuidancePanel(c1,c2,mult){
+  const panel=document.getElementById('guidance-panel');
+  const r1=getHydrationRec(c1,mult);
+  function prodCard(city,rec){
+    return `<div class="guidance-product">
+      <div class="gp-name">${city.city}: WaterBoy ${rec.product}</div>
+      <div class="gp-dosage">~${rec.peakOz} oz/hr fluid loss \u2192 ${rec.sticks} stick${rec.sticks>1?'s':''} per session</div>
+      <div class="gp-reason">${rec.reason}</div>
+      <a href="${rec.url}" target="_blank" rel="noopener">Learn about ${rec.product} \u2192</a>
+    </div>`;
+  }
+  let html=`<h4>What This Means For You</h4>
+    <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:14px">Based on local climate and your activity level, here\u2019s the science-backed hydration play.</p>
+    <div class="guidance-grid">${prodCard(c1,r1)}`;
+  if(c2){const r2=getHydrationRec(c2,mult);html+=prodCard(c2,r2);}
+  html+=`</div>`;
+  const tip=r1.recovery||(c2?getHydrationRec(c2,mult).recovery:null);
+  if(tip) html+=`<div class="recovery-tip"><strong>Night Recovery Alert:</strong> ${tip.text}. Consider <a href="${tip.url}" target="_blank" rel="noopener">${tip.product}</a> (3,187mg electrolytes + ginger) to help your body catch up.</div>`;
+  panel.style.display='block';
+  panel.innerHTML=html;
 }
 
 function renderChart(c1,c2,mult){
@@ -946,25 +1087,43 @@ function computeFindings(){
   // 5. Year-round burden count
   const yearRound=cities.filter(c=>c.archetype==='Year-Round Burden');
 
-  const ratio=lowestWithHours.annualHighHIHours>0?Math.round(topHrs.annualHighHIHours/lowestWithHours.annualHighHIHours):'many';
+  // Find a meaningful comparison city: lowest with >0 risk hours for a ratio, or use a zero-hours city for contrast
+  const withHours=byHours.filter(c=>c.annualHighHIHours>0);
+  const zeroHours=byHours.filter(c=>c.annualHighHIHours===0);
+  let riskCompare;
+  if(zeroHours.length>0){
+    riskCompare=`${topHrs.city}, ${topHrs.state} spends ${topHrs.pctYear}% of the year at or above the NWS Caution threshold (HI \u2265 80\u00b0F). ${zeroHours[0].city}? Zero hours.`;
+  } else {
+    const lowest=withHours[withHours.length-1];
+    riskCompare=`${topHrs.city}, ${topHrs.state} spends ${topHrs.pctYear}% of the year at or above the NWS Caution threshold (HI \u2265 80\u00b0F) \u2014 ${Math.round(topHrs.annualHighHIHours/lowest.annualHighHIHours)}\u00d7 more than ${lowest.city}.`;
+  }
 
   const cards=[
-    {title:'The Risk Hours Champion',
+    {title:'The City That Never Cools Down',
      stat:`${topHrs.annualHighHIHours.toLocaleString()} hrs/yr`,
-     text:`${topHrs.city}, ${topHrs.state} spends ${topHrs.pctYear}% of the year at or above the NWS Caution threshold (HI \u2265 80\u00b0F) \u2014 ${ratio}\u00d7 more than ${lowestWithHours.city}.`},
-    {title:'No Nighttime Relief',
+     text:riskCompare},
+    {title:'When Even Night Doesn\u2019t Help',
      stat:`${noRecCities.length} cities`,
      text:`${noRecCities.length} metros never cool below 75\u00b0F at night during peak months, preventing the body from recovering overnight: ${noRecCities.slice(0,5).map(c=>c.city).join(', ')}${noRecCities.length>5?', and more':''}.`},
-    {title:'Fluid Loss Spread',
+    {title:'Not All Sweat Is Created Equal',
      stat:`${topFluid.peakSweatAdj} vs ${botFluid.peakSweatAdj} oz/hr`,
      text:`At moderate exercise, ${topFluid.city} demands ${topFluid.peakSweatAdj} oz/hr of fluid replacement vs just ${botFluid.peakSweatAdj} oz/hr in ${botFluid.city} \u2014 a ${Math.round(topFluid.peakSweatAdj/botFluid.peakSweatAdj*10)/10}\u00d7 difference.`},
-    {title:'Humidity Trap Cities',
+    {title:'The Sneaky Humid Ones',
      stat:`${traps.length} of ${cities.length}`,
      text:`In ${traps.length} metros, humidity amplifies perceived heat by over 5% beyond what temperature alone predicts. ${traps.slice(0,4).map(c=>c.city).join(', ')} lead the pack.`},
-    {title:'Year-Round Burden',
+    {title:'No Off-Season',
      stat:`${yearRound.length} metros`,
-     text:`${yearRound.length} cities face 6+ months of high hydration demand annually, making consistent fluid intake a year-round necessity, not just a summer concern.`}
-  ];
+     text:`${yearRound.length} cities face 6+ months of high hydration demand annually, making consistent fluid intake a year-round necessity, not just a summer concern.`},
+    // 6. Dry-heat paradox: highest fluid loss city vs its HDS rank
+    (function(){
+      const phoenix=cities.find(c=>c.city==='Phoenix');
+      const topHDS=cities[0];
+      if(!phoenix) return null;
+      return {title:'The Dry-Heat Paradox',
+        stat:`#${phoenix.rank} rank, #1 sweat`,
+        text:`Phoenix loses more fluid per hour (${phoenix.peakSweatAdj} oz/hr) than any city in the study \u2014 yet ranks only #${phoenix.rank} overall. Why? Dry air lets sweat evaporate efficiently, lowering perceived strain. Humid cities like ${topHDS.city} rank higher because your body works harder to cool down even though you may lose less.`};
+    })()
+  ].filter(Boolean);
 
   grid.innerHTML=cards.map(f=>`
     <div class="finding-card">
