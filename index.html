@@ -140,6 +140,14 @@ a{color:var(--blue)}
 .fluid-grid .fluid-cell.peak{background:#ffd166}
 .fluid-cell .fluid-label{font-size:0.65rem;color:var(--text-light);display:block}
 .fluid-cell .fluid-value{font-size:1rem;font-weight:700;color:var(--blue-dark)}
+/* HDS scale bar */
+.hds-scale{position:relative;height:10px;border-radius:5px;margin:6px 0 10px;
+  background:linear-gradient(to right,#2dc653 0%,#a8d85a 15%,#ffd166 35%,#f77f00 55%,#d62828 100%)}
+.hds-scale-marker{position:absolute;top:-3px;width:4px;height:16px;background:#1a1a2e;border-radius:2px;transform:translateX(-50%)}
+.hds-scale-labels{display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-light);margin-bottom:6px}
+/* Annual avg fluid row */
+.fluid-grid.annual .fluid-cell{background:#e8f4fd}
+.fluid-grid.annual .fluid-cell.peak{background:#b8d8f0}
 /* Metrics mini-grid in calc cards */
 .metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .metric-box{background:var(--blue-pale);border-radius:8px;padding:10px;text-align:center}
@@ -331,7 +339,6 @@ a{color:var(--blue)}
     <p><strong>UV Index:</strong> Estimated from solar zenith angle (latitude + seasonal declination), altitude correction (+6% per km), and cloud cover attenuation. Categories per EPA UV Index Scale: Low (&lt;3), Moderate (3&ndash;5), High (6&ndash;7), Very High (8&ndash;10), Extreme (11+).</p>
     <p><strong>Nighttime Temperature:</strong> Average of hours 20:00&ndash;05:00 from NOAA hourly normals. &ldquo;No Recovery&rdquo; flag when peak-month nighttime average exceeds 75&deg;F, indicating the body cannot cool down overnight.</p>
     <p><strong>Altitude Adjustment:</strong> Fluid loss increased by 5% per 1,000m of elevation per National Academies IOM and USARIEM TB MED 505 guidelines. Cities above 1,000m are flagged as high-altitude.</p>
-    <p><strong>Consecutive High-Demand Streak:</strong> Longest run of consecutive months with HDS &ge; 30, including December&rarr;January wraparound. Days estimated as HDS/100 &times; days in each qualifying month.</p>
     <p><strong>Risk Hours:</strong> Count of hourly normals (out of 8,760 per year) where the computed Heat Index &ge; 80&deg;F, the NWS &ldquo;Caution&rdquo; threshold. Represents the percentage of a typical year a city spends at or above conditions that require increased hydration awareness. This metric captures sub-daily heat spikes that monthly averages mask &mdash; a city with 4,000+ risk hours faces meaningfully different conditions than one with 300, even when monthly averages appear similar.</p>
 
     <h4>Product Guidance</h4>
@@ -904,6 +911,7 @@ function renderCalcCards(c1,c2,mult){
     const wf=c.peakWBGTFlag,uc=c.peakUVICat;
     const pi=c.peakIdx;
     // Fluid loss grid: all activity levels at peak month
+    // Peak month fluid loss (all activity levels)
     const fluidCells=ACTIVITY_LEVELS.map(lv=>{
       const raw=computeSweatRate(c.monthlyTemp[pi],c.monthlyWind[pi],lv.watts);
       const adjusted=Math.round(raw*c.altMult*10)/10;
@@ -912,9 +920,20 @@ function renderCalcCards(c1,c2,mult){
         <span class="fluid-label">${lv.label}</span>
       </div>`;
     }).join('');
+    // Annual average fluid loss (all activity levels, mean of 12 months)
+    const annualFluidCells=ACTIVITY_LEVELS.map(lv=>{
+      const avg=c.monthlyTemp.reduce((sum,t,i)=>sum+computeSweatRate(t,c.monthlyWind[i],lv.watts),0)/12;
+      const adjusted=Math.round(avg*c.altMult*10)/10;
+      return `<div class="fluid-cell${lv.watts===300?' peak':''}">
+        <span class="fluid-value">${adjusted}</span>
+        <span class="fluid-label">${lv.label}</span>
+      </div>`;
+    }).join('');
     return `<div class="calc-card">
       <h3>#${c.rank} ${c.city}, ${c.state}</h3>
       <div class="city-hds" style="color:${hdsColor(adj)}">${adj}</div>
+      <div class="hds-scale-labels"><span>Low</span><span>Moderate</span><span>High</span><span>Extreme</span></div>
+      <div class="hds-scale"><div class="hds-scale-marker" style="left:${Math.min(adj,100)}%"></div></div>
       <div class="city-details">
         <span><strong>Base Hydration Demand Score:</strong> ${c.annualHDS} &rarr; <strong>Adjusted:</strong> ${adj} (${mult}x activity)</span>
         <span><strong>Peak Month:</strong> ${c.peakMonth} (Score: ${peakAdj})</span>
@@ -950,8 +969,12 @@ function renderCalcCards(c1,c2,mult){
         </div>
       </div>
       <div style="margin-top:12px">
-        <strong style="font-size:0.8rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px">Estimated Fluid Loss (${c.peakMonth}, oz/hr)</strong>
+        <strong style="font-size:0.8rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px">Peak Month Fluid Loss (${c.peakMonth}, oz/hr)</strong>
         <div class="fluid-grid">${fluidCells}</div>
+      </div>
+      <div style="margin-top:8px">
+        <strong style="font-size:0.8rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px">Annual Average Fluid Loss (oz/hr)</strong>
+        <div class="fluid-grid annual">${annualFluidCells}</div>
       </div>
     </div>`;
   }
