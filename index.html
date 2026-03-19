@@ -93,8 +93,6 @@ a{color:var(--blue)}
   background:var(--white);cursor:pointer;transition:border-color 0.2s}
 .control-group select:focus{outline:none;border-color:var(--blue)}
 .chart-wrap{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
-.chart-container{position:relative;height:350px}
-@media(max-width:768px){.chart-container{height:250px}}
 
 /* Multiplier display */
 .multiplier-info{background:linear-gradient(135deg,#f0f7ff,#e8f4fd);border-radius:var(--radius);
@@ -286,11 +284,7 @@ a{color:var(--blue)}
     </div>
     <div class="calc-layout" id="calc-cards"></div>
     <div id="guidance-panel" class="guidance-panel" style="display:none"></div>
-    <div class="chart-wrap">
-      <div class="chart-container">
-        <canvas id="comparison-chart"></canvas>
-      </div>
-    </div>
+    <!-- chart removed for clarity -->
     <div class="multiplier-info">
       <h4>Why Your Workout Turns Up the Dial</h4>
       <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:12px">Physical exertion multiplies sweat rate. At vigorous exercise, your body produces 6-8x more sweat than at rest. The adjusted Hydration Demand Score shows how conditions that are merely warm for a sedentary person become dangerous for athletes.</p>
@@ -732,7 +726,7 @@ Object.keys(regionData).forEach(r=>{
 
 // ===== STATE =====
 let currentSeason='annual';
-let map, markers=[], compChart=null;
+let map, markers=[];
 
 // ===== HERO STATS =====
 function renderHeroStats(){
@@ -901,7 +895,6 @@ function updateCalc(){
   const mult=parseFloat(document.getElementById('calc-activity').value);
   renderCalcCards(c1,c2,mult);
   renderGuidancePanel(c1,c2,mult);
-  renderChart(c1,c2,mult);
   renderMultBars(mult);
 }
 
@@ -1003,78 +996,6 @@ function renderGuidancePanel(c1,c2,mult){
   if(tip) html+=`<div class="recovery-tip"><strong>Night Recovery Alert:</strong> ${tip.text}. Consider <a href="${tip.url}" target="_blank" rel="noopener">${tip.product}</a> (3,187mg electrolytes + ginger) to help your body catch up.</div>`;
   panel.style.display='block';
   panel.innerHTML=html;
-}
-
-function renderChart(c1,c2,mult){
-  const ctx=document.getElementById('comparison-chart');
-  if(compChart)compChart.destroy();
-  const datasets=[{
-    label:`${c1.city} Hydration Demand Score`,
-    data:c1.monthlyHDS.map(v=>adjustHDS(v,mult)),
-    borderColor:'#0077b6',backgroundColor:'rgba(0,119,182,0.08)',
-    fill:true,tension:0.4,pointRadius:4,pointHoverRadius:6,borderWidth:2.5
-  }];
-  // WBGT line for city 1 (secondary axis)
-  datasets.push({
-    label:`${c1.city} WBGT`,
-    data:c1.monthlyWBGT,
-    borderColor:'#7b2cbf',backgroundColor:'transparent',
-    borderDash:[6,3],fill:false,tension:0.4,pointRadius:3,pointHoverRadius:5,borderWidth:2,
-    yAxisID:'y2'
-  });
-  if(c2){
-    datasets.push({
-      label:`${c2.city} Hydration Demand Score`,
-      data:c2.monthlyHDS.map(v=>adjustHDS(v,mult)),
-      borderColor:'#d62828',backgroundColor:'rgba(214,40,40,0.08)',
-      fill:true,tension:0.4,pointRadius:4,pointHoverRadius:6,borderWidth:2.5
-    });
-    datasets.push({
-      label:`${c2.city} WBGT`,
-      data:c2.monthlyWBGT,
-      borderColor:'#c77dba',backgroundColor:'transparent',
-      borderDash:[6,3],fill:false,tension:0.4,pointRadius:3,pointHoverRadius:5,borderWidth:2,
-      yAxisID:'y2'
-    });
-  }
-  datasets.push({
-    label:'High Demand Threshold',
-    data:Array(12).fill(HDS_HIGH),
-    borderColor:'#f77f00',borderDash:[6,4],borderWidth:1.5,
-    pointRadius:0,fill:false
-  });
-  compChart=new Chart(ctx,{
-    type:'line',
-    data:{labels:MONTHS,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      scales:{
-        y:{min:0,max:100,title:{display:true,text:'Hydration Demand Score',font:{weight:'bold'}},
-          grid:{color:'#f0f0f0'}},
-        y2:{position:'right',min:0,max:40,title:{display:true,text:'WBGT (\u00b0C)',font:{weight:'bold'},color:'#7b2cbf'},
-          ticks:{color:'#7b2cbf'},grid:{display:false}},
-        x:{grid:{display:false}}
-      },
-      plugins:{
-        legend:{position:'top',labels:{usePointStyle:true,padding:15}},
-        tooltip:{
-          backgroundColor:'rgba(26,26,46,0.9)',padding:12,cornerRadius:8,
-          callbacks:{
-            afterLabel:function(ctx){
-              const di=ctx.datasetIndex;
-              let city=null;
-              if(di===0||di===1) city=c1;
-              else if(c2&&(di===2||di===3)) city=c2;
-              if(!city)return'';
-              const i=ctx.dataIndex;
-              return `Temp: ${city.monthlyTemp[i]}\u00b0F | HI: ${city.monthlyHI[i]}\u00b0F | Dew Pt: ${city.monthlyDewp[i]}\u00b0F | RH: ${city.monthlyRH[i]}%`;
-            }
-          }
-        }
-      }
-    }
-  });
 }
 
 function renderMultBars(activeMult){
