@@ -870,6 +870,7 @@ function updateRegionSidebar(){
     <div class="region-card">
       <div class="region-name">${r.name}</div>
       <div class="region-hds" style="color:${hdsColor(r.avg)}">${r.avg}</div>
+      <div style="font-size:0.65rem;color:var(--text-light);margin-top:-2px">Hydration Demand Score</div>
       <div class="region-cities">${r.count} cities &bull; Top: ${r.topCity}</div>
     </div>`).join('');
 }
